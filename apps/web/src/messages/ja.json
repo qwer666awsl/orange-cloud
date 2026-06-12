@@ -6,11 +6,16 @@
 	},
 	"header": {
 		"language": "言語",
-		"download": "App Store"
+		"download": "App Store",
+		"downloadComing": "審査中"
 	},
 	"badge": {
 		"line1": "App Storeで",
-		"line2": "ダウンロード"
+		"line2": "ダウンロード",
+		"comingLine1": "審査中",
+		"comingLine2": "App Store",
+		"alt": "App Store でダウンロード",
+		"comingLabel": "App Store 審査中"
 	},
 	"hero": {
 		"kicker": "iPhone と iPad のためのネイティブアプリ",
@@ -109,6 +114,29 @@
 		"title": "Cloudflare をポケットに",
 		"sub": "今夜の空は、もうアプリの中で待っています。",
 		"requirement": "iOS 26.0 以降が必要 · iPhone / iPad 対応"
+	},
+	"changelog": {
+		"title": "ベータリリース",
+		"sub": "App Store 版は審査中です。TestFlight で最新ビルドをいち早く試せます。",
+		"tfButton": "TestFlight に参加",
+		"tfNote": "iOS 26.0 以降が必要 · Apple デバイス限定",
+		"entries": [
+			{
+				"version": "1.0 (3)",
+				"date": "2026.06.12",
+				"notes": [
+					"初の公開ベータ",
+					"公式 OAuth ログイン · API トークン不要",
+					"ドメイン一覧 · DNS 管理（作成 / 編集 / 削除）",
+					"トラフィック分析（リクエスト / 帯域 / キャッシュ / 脅威）",
+					"Workers 一覧 · ライブログ tail",
+					"R2 オブジェクト閲覧 · D1 SQL · KV 管理",
+					"WAF カスタムルール · Cloudflare Tunnel 状態",
+					"ウィジェット · Siri ショートカット · 複数アカウント",
+					"Pro サブスク · 買い切り購入"
+				]
+			}
+		]
 	},
 	"footer": {
 		"privacy": "プライバシーポリシー",

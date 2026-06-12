@@ -6,11 +6,16 @@
 	},
 	"header": {
 		"language": "Language",
-		"download": "App Store"
+		"download": "App Store",
+		"downloadComing": "Under Review"
 	},
 	"badge": {
 		"line1": "Download on the",
-		"line2": "App Store"
+		"line2": "App Store",
+		"comingLine1": "Under Review",
+		"comingLine2": "App Store",
+		"alt": "Download on the App Store",
+		"comingLabel": "Under App Store review"
 	},
 	"hero": {
 		"kicker": "Native for iPhone & iPad",
@@ -109,6 +114,29 @@
 		"title": "Put Cloudflare in your pocket",
 		"sub": "Tonight's sky is already waiting in the app.",
 		"requirement": "Requires iOS 26.0 or later · iPhone and iPad"
+	},
+	"changelog": {
+		"title": "Beta Releases",
+		"sub": "The App Store version is under review. Join TestFlight to try the latest build now.",
+		"tfButton": "Join TestFlight",
+		"tfNote": "Requires iOS 26.0 or later · Apple devices only",
+		"entries": [
+			{
+				"version": "1.0 (3)",
+				"date": "2026.06.12",
+				"notes": [
+					"First public beta",
+					"Official OAuth sign-in · no API token needed",
+					"Domain list · full DNS management",
+					"Traffic analytics (requests / bandwidth / cache / threats)",
+					"Workers list · live log tail",
+					"R2 object browser · D1 SQL console · KV management",
+					"WAF custom rules · Cloudflare Tunnel status",
+					"Home Screen widgets · Siri shortcuts · multi-account",
+					"Pro subscription · one-time purchase"
+				]
+			}
+		]
 	},
 	"footer": {
 		"privacy": "Privacy Policy",

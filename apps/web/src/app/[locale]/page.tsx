@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { shotLocale } from "@/i18n/routing";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import AppStoreBadge from "@/components/AppStoreBadge";
+import AppStoreBadge, { TESTFLIGHT_URL, APP_STORE_COMING } from "@/components/AppStoreBadge";
 import PhoneDemo, { type PhoneStrings } from "@/components/PhoneDemo";
 import HorizonArc from "@/components/HorizonArc";
 import Reveal from "@/components/Reveal";
@@ -35,6 +35,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 	const featureItems = t.raw("features.items") as Array<{ t: string; b: string }>;
 	const freeItems = t.raw("pro.freeItems") as string[];
 	const proItems = t.raw("pro.proItems") as string[];
+	const changelogEntries = t.raw("changelog.entries") as Array<{
+		version: string;
+		date: string;
+		notes: string[];
+	}>;
 
 	return (
 		<>
@@ -66,7 +71,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 							</Reveal>
 							<Reveal index={3}>
 								<div className="mt-8 flex flex-wrap items-center gap-5">
-									<AppStoreBadge line1={t("badge.line1")} line2={t("badge.line2")} />
+									<AppStoreBadge
+										locale={locale}
+										alt={t("badge.alt")}
+										comingLabel={t("badge.comingLabel")}
+										coming={APP_STORE_COMING}
+									/>
 									<span className="text-[13px] t-tertiary">{t("hero.note")}</span>
 								</div>
 							</Reveal>
@@ -268,6 +278,76 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 					</div>
 				</section>
 
+				{/* —— 版本历史 · 深夜 —— */}
+				<section className="sky-band band-night">
+					<div className="mx-auto max-w-[1120px] px-6 py-20">
+						<Reveal index={0}>
+							<div className="flex flex-wrap items-end justify-between gap-6">
+								<div>
+									<h2 className="f-display text-[32px] font-bold t-primary sm:text-[38px]">{t("changelog.title")}</h2>
+									<p className="mt-3 max-w-[52ch] text-[16px] t-secondary">{t("changelog.sub")}</p>
+								</div>
+								<a
+									href={TESTFLIGHT_URL}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex shrink-0 items-center gap-2 rounded-[12px] px-5 py-2.5 text-[15px] font-semibold text-white no-underline transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.97]"
+									style={{ background: "var(--oc-orange)" }}
+								>
+									<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+										<path d="M21.7 2.3a1 1 0 0 0-1.1-.2L3.1 9.1a1 1 0 0 0 .2 1.9l7.7 1.5 1.5 7.7a1 1 0 0 0 1.9.2L21.9 3.4a1 1 0 0 0-.2-1.1z" />
+									</svg>
+									{t("changelog.tfButton")}
+								</a>
+							</div>
+						</Reveal>
+
+						{/* 时间线 */}
+						<div className="relative mt-12">
+							<div className="absolute bottom-0 top-3 w-px bg-white/10" style={{ left: "0.5rem" }} />
+							<div className="space-y-8">
+								{changelogEntries.map((entry, i) => (
+									<Reveal key={`${entry.version}-${entry.date}`} index={i + 1}>
+										<div className="relative pl-10">
+											<div
+												className="absolute top-2 h-3 w-3 -translate-x-1/2 rounded-full ring-2 ring-orange-400/60"
+												style={{ left: "0.5rem", background: "var(--oc-orange)" }}
+											/>
+											<span className="text-[12px] font-medium tracking-wide t-tertiary">{entry.date}</span>
+											<div className="glass r-island mt-2 p-5 sm:p-6">
+												<div className="flex flex-wrap items-center gap-2">
+													<h3 className="f-display text-[17px] font-bold t-primary">v{entry.version}</h3>
+													<span
+														className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+														style={{ background: "rgba(244,129,32,0.15)", color: "var(--oc-orange)" }}
+													>
+														TestFlight β
+													</span>
+												</div>
+												<ul className="mt-3 space-y-1.5">
+													{entry.notes.map((note) => (
+														<li key={note} className="flex items-start gap-2 text-[13.5px] leading-relaxed t-secondary">
+															<span
+																className="mt-[7px] h-[5px] w-[5px] flex-none rounded-full"
+																style={{ background: "var(--t-tertiary)" }}
+															/>
+															{note}
+														</li>
+													))}
+												</ul>
+											</div>
+										</div>
+									</Reveal>
+								))}
+							</div>
+						</div>
+
+						<Reveal index={changelogEntries.length + 1}>
+							<p className="mt-6 text-[12px] t-tertiary" style={{ marginLeft: "2.5rem" }}>{t("changelog.tfNote")}</p>
+						</Reveal>
+					</div>
+				</section>
+
 				{/* —— 终幕 CTA + 页脚 · 深夜 —— */}
 				<section className="sky-band band-night relative">
 					<Stars />
@@ -288,7 +368,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 						</Reveal>
 						<Reveal index={2}>
 							<div className="mt-9 flex justify-center">
-								<AppStoreBadge line1={t("badge.line1")} line2={t("badge.line2")} />
+								<AppStoreBadge
+										locale={locale}
+										alt={t("badge.alt")}
+										comingLabel={t("badge.comingLabel")}
+										coming={APP_STORE_COMING}
+									/>
 							</div>
 							<p className="mt-5 text-[13px] t-tertiary">{t("cta.requirement")}</p>
 						</Reveal>
