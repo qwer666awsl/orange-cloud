@@ -122,6 +122,14 @@
 		"tfNote": "Requires iOS 18.0 or later · Apple devices only",
 		"entries": [
 			{
+				"version": "1.0 (5)",
+				"date": "2026.06.15",
+				"notes": [
+					"Switching accounts now filters everything — Workers, storage and stats follow the account you've selected",
+					"Sturdier sign-in: fixed authorization expiring too soon and re-prompting after a brief network blip"
+				]
+			},
+			{
 				"version": "1.0 (4)",
 				"date": "2026.06.15",
 				"notes": [
