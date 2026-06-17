@@ -116,6 +116,9 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     daybreakHeader
                         .islandReveal(0)
+                    if session.error != nil || viewModel.loadFailed {
+                        RefreshFailedBanner { Task { await refreshAll() } }
+                    }
                     Group {
                         if cachedZones.isEmpty && viewModel.isLoadingAssets {
                             statSkeleton
@@ -130,21 +133,6 @@ struct DashboardView: View {
                         .islandReveal(3)
                     networkSection
                         .islandReveal(4)
-
-                    if let error = session.error {
-                        ContentUnavailableView {
-                            Label("加载失败", systemImage: "wifi.exclamationmark")
-                        } description: {
-                            Text(error)
-                        } actions: {
-                            Button("重试") {
-                                Task { await session.ensureAccounts() }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(Color.ocOrangePressed)
-                            .fontWeight(.bold)
-                        }
-                    }
                 }
                 .padding(OCLayout.pagePadding)
             }
@@ -159,7 +147,7 @@ struct DashboardView: View {
                 }
             }
             .task(id: session.accounts.count) {
-                AccountSwitchTip.hasMultipleAccounts = session.accounts.count > 1
+                AccountSwitchTip.hasMultipleAccounts = session.accounts.count > 1 || auth.sessions.count > 1
             }
             .task(id: displayZones.map(\.id)) {
                 await loadTraffic()
@@ -177,15 +165,20 @@ struct DashboardView: View {
                 Task { await loadUsage(force: true) }
             }
             .refreshable {
-                await session.ensureAccounts()
-                await loadAssets(force: true)
-                await loadTraffic(force: true)
-                await loadUsage(force: true)
+                await refreshAll()
             }
             .sheet(item: $usageDetail) { service in
                 usageDetailSheet(service)
             }
         }
+    }
+
+    /// 下拉刷新 / 顶部失败提示重试：强制重拉账号、资产、流量、用量
+    private func refreshAll() async {
+        await session.ensureAccounts()
+        await loadAssets(force: true)
+        await loadTraffic(force: true)
+        await loadUsage(force: true)
     }
 
     /// 首屏资产统计：域名 / Workers / DNS 数量不等用户进入对应页面，进 Dashboard 就拉
@@ -361,14 +354,35 @@ struct DashboardView: View {
 
     private var accountMenu: some View {
         Menu {
-            ForEach(session.accounts) { account in
-                Button {
-                    session.selectedAccount = account
-                } label: {
-                    if account.id == session.selectedAccount?.id {
-                        Label(account.name, systemImage: "checkmark")
-                    } else {
-                        Text(account.name)
+            // 登录身份（在设置里「添加账号」加的，多个时点这里直接切换）
+            Section {
+                ForEach(auth.sessions) { identity in
+                    Button {
+                        if identity.id != auth.currentSessionId {
+                            auth.switchSession(identity.id)
+                        }
+                    } label: {
+                        if identity.id == auth.currentSessionId {
+                            Label(identity.label, systemImage: "checkmark")
+                        } else {
+                            Text(identity.label)
+                        }
+                    }
+                }
+            }
+            // 当前身份下的多个 Cloudflare 账号
+            if session.accounts.count > 1 {
+                Section("Cloudflare 账号") {
+                    ForEach(session.accounts) { account in
+                        Button {
+                            session.selectedAccount = account
+                        } label: {
+                            if account.id == session.selectedAccount?.id {
+                                Label(account.name, systemImage: "checkmark")
+                            } else {
+                                Text(account.name)
+                            }
+                        }
                     }
                 }
             }

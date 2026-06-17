@@ -63,10 +63,11 @@ struct WorkerListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("刷新", systemImage: "arrow.clockwise") {
-                        Task { await refresh() }
-                    }
-                    .loadingSpinSymbolEffect(isActive: viewModel.isLoading)
+                    RefreshButton(
+                        isLoading: viewModel.isLoading,
+                        failed: viewModel.error != nil,
+                        action: { Task { await refresh() } }
+                    )
                 }
             }
             .task {
@@ -76,14 +77,6 @@ struct WorkerListView: View {
                 Button("好", role: .cancel) {}
             } message: {
                 Text("当前授权未包含实时日志权限（workers-tail.read）。\n请在设置中退出登录后重新授权以启用此功能。")
-            }
-            .alert("加载失败", isPresented: .init(
-                get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.error = nil } }
-            )) {
-                Button("好", role: .cancel) {}
-            } message: {
-                Text(viewModel.error ?? "")
             }
         }
     }

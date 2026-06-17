@@ -26,6 +26,8 @@ final class DashboardViewModel {
     /// 全账号 DNS 记录总数（首屏 total_count 汇总；nil = 未加载/无权限，回退已同步缓存计数）
     private(set) var dnsRecordTotal: Int?
     private(set) var isLoadingAssets = false
+    /// 最近一次资产刷新是否失败（核心即 Zone 列表拉取失败）——驱动 Dashboard 顶部红色提示
+    private(set) var loadFailed = false
 
     private var loadedZoneIds: Set<String> = []
     private var assetsLoadedForAccount: String?
@@ -71,10 +73,14 @@ final class DashboardViewModel {
         guard force || assetsLoadedForAccount != accountId else { return }
         guard !isLoadingAssets else { return }
         isLoadingAssets = true
+        loadFailed = false
         defer { isLoadingAssets = false }
 
-        // Zone 列表是 DNS 统计的基础；失败保持未加载态，下次进入重试
-        guard let zones = try? await zoneService.listZones(accountId: accountId) else { return }
+        // Zone 列表是 DNS 统计的基础；失败显示顶部红色提示，下次进入/下拉重试
+        guard let zones = try? await zoneService.listZones(accountId: accountId) else {
+            loadFailed = true
+            return
+        }
         try? CacheSync.syncZones(zones, accountId: accountId, accountName: accountName, context: context)
 
         if canReadWorkers, let scripts = try? await workerService.listScripts(accountId: accountId) {

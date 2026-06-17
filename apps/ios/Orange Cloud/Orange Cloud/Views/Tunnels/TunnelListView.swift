@@ -42,15 +42,16 @@ struct TunnelListView: View {
         .background { SkyBackground() }
         .navigationTitle("Cloudflare Tunnel")
         .navigationBarTitleDisplayMode(.inline)
-        .task { await load() }
-        .alert("加载失败", isPresented: .init(
-            get: { viewModel.error != nil },
-            set: { if !$0 { viewModel.error = nil } }
-        )) {
-            Button("好", role: .cancel) {}
-        } message: {
-            Text(viewModel.error ?? "")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                RefreshButton(
+                    isLoading: viewModel.isLoading,
+                    failed: viewModel.error != nil,
+                    action: { Task { await load() } }
+                )
+            }
         }
+        .task { await load() }
     }
 
     private func load() async {

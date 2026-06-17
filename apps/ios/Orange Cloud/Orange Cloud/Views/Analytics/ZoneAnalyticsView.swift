@@ -24,15 +24,22 @@ struct ZoneAnalyticsSection: View {
         VStack(spacing: 14) {
             rangePicker
 
+            if viewModel.error != nil && !viewModel.isLoading {
+                RefreshFailedBanner { Task { await viewModel.load() } }
+            }
+
             if viewModel.isLoading && viewModel.points.isEmpty {
                 analyticsSkeleton
             } else if viewModel.points.isEmpty {
-                ContentUnavailableView {
-                    Label("暂无数据", systemImage: "chart.xyaxis.line")
-                } description: {
-                    Text("所选时间范围内没有流量数据")
+                // 失败时不再误报「暂无数据」，由上方红色提示说明
+                if viewModel.error == nil {
+                    ContentUnavailableView {
+                        Label("暂无数据", systemImage: "chart.xyaxis.line")
+                    } description: {
+                        Text("所选时间范围内没有流量数据")
+                    }
+                    .frame(minHeight: 200)
                 }
-                .frame(minHeight: 200)
             } else {
                 requestsHeroCard
                 cacheHitCard
@@ -52,14 +59,6 @@ struct ZoneAnalyticsSection: View {
         .onChange(of: viewModel.selectedRange) {
             selectedDate = nil
             Task { await viewModel.load() }
-        }
-        .alert("加载失败", isPresented: .init(
-            get: { viewModel.error != nil },
-            set: { if !$0 { viewModel.error = nil } }
-        )) {
-            Button("好", role: .cancel) {}
-        } message: {
-            Text(viewModel.error ?? "")
         }
     }
 

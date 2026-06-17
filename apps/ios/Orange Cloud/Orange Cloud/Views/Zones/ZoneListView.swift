@@ -53,14 +53,6 @@ struct ZoneListView: View {
         .task {
             await refresh()
         }
-        .alert("加载失败", isPresented: .init(
-            get: { viewModel.error != nil },
-            set: { if !$0 { viewModel.error = nil } }
-        )) {
-            Button("好", role: .cancel) {}
-        } message: {
-            Text(viewModel.error ?? "")
-        }
     }
 
     // MARK: - iPad 双栏（regular）
@@ -164,10 +156,11 @@ struct ZoneListView: View {
     // MARK: - 共用
 
     private var refreshButton: some View {
-        Button("刷新", systemImage: "arrow.clockwise") {
-            Task { await refresh() }
-        }
-        .loadingSpinSymbolEffect(isActive: viewModel.isLoading)
+        RefreshButton(
+            isLoading: viewModel.isLoading,
+            failed: viewModel.error != nil,
+            action: { Task { await refresh() } }
+        )
     }
 
     private var emptyState: some View {
