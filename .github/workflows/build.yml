@@ -39,13 +39,14 @@ jobs:
           echo "No Podfile found, skipping..."
         fi
 
-    # 6. 核心编译（使用最新编译器 + 官方免破解解锁参数）
+    # 6. 核心编译：只点名编译主程序和小组件，完美绕开通知扩展的无签名报错
     - name: Build Xcode Project (Official Spec)
       run: |
         mkdir -p $GITHUB_WORKSPACE/build-output
         
+        # 1. 先单独编译 iPad/iPhone 桌面小组件
         xcodebuild -project "apps/ios/Orange Cloud/Orange Cloud.xcodeproj" \
-                   -scheme "Orange Cloud" \
+                   -target "OrangeCloudWidgetsExtension" \
                    -configuration Release \
                    -sdk iphoneos \
                    clean build \
@@ -53,7 +54,20 @@ jobs:
                    CODE_SIGNING_REQUIRED=NO \
                    APPLICATION_EXTENSION_API_ONLY=YES \
                    SWIFT_ACTIVE_COMPILATION_CONDITIONS="OPENSOURCE_UNLOCKED" \
+                   CONFIGURATION_BUILD_DIR=$GITHUB_WORKSPACE/build-output/Extensions
+
+        # 2. 再单独编译主 App 本体，跳过通知扩展（notification）
+        xcodebuild -project "apps/ios/Orange Cloud/Orange Cloud.xcodeproj" \
+                   -target "Orange Cloud" \
+                   -configuration Release \
+                   -sdk iphoneos \
+                   build \
+                   CODE_SIGNING_ALLOWED=NO \
+                   CODE_SIGNING_REQUIRED=NO \
+                   APPLICATION_EXTENSION_API_ONLY=NO \
+                   SWIFT_ACTIVE_COMPILATION_CONDITIONS="OPENSOURCE_UNLOCKED" \
                    CONFIGURATION_BUILD_DIR=$GITHUB_WORKSPACE/build-output
+
 
     # 7. 将编译出的 App 封装为无签名 .ipa 格式
     - name: Package .app into .ipa
