@@ -50,9 +50,9 @@ jobs:
         if: success()
         run: |
           mkdir -p build/Payload
-          cp -R build/Release-iphoneos/Orange Cloud.app build/Payload/
+          cp -R "build/Release-iphoneos/Orange Cloud.app" build/Payload/
           cd build
-          zip -r ../OrangeCloud-iOS-unsigned.ipa Payload/Orange Cloud.app
+          zip -r ../OrangeCloud-iOS-unsigned.ipa "Payload/Orange Cloud.app"
           cd ..
 
       - name: Upload .ipa artifact
