@@ -38,6 +38,7 @@ jobs:
             -scheme "Orange Cloud" \
             -configuration Release \
             -destination "generic/platform=iOS" \
+            SYMROOT=build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
             DEVELOPMENT_TEAM="" \
