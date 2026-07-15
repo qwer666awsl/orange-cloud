@@ -35,9 +35,8 @@ jobs:
         run: |
           xcodebuild \
             -project "Orange Cloud.xcodeproj" \
-            -target "Orange Cloud" \
+            -scheme "Orange Cloud" \
             -configuration Release \
-            -sdk iphoneos \
             -destination "generic/platform=iOS" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
